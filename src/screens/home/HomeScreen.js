@@ -93,7 +93,6 @@ const ItemRoom = ({ image, nameRoom }) => (
 export default function HomeScreen({ navigation }) {
   const [data, setData] = useState([]);
   const { logout } = useContext(AuthContext);
-
   const get = () => {
     database()
       .ref("products/")

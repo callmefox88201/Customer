@@ -92,6 +92,7 @@ const ProductListScreen = ({ navigation }) => {
   };
   useEffect(() => {
     get("");
+    // console.log(data)
     return () => {
       setData([]);
       setPopularData([]);

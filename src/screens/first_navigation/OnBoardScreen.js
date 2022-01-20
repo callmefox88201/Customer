@@ -1,4 +1,5 @@
 import React from "react";
+import { StatusBar } from "expo-status-bar";
 import {
   View,
   Text,
@@ -39,34 +40,46 @@ const done = ({ ...props }) => (
 
 export default function OnBoardScreen({ navigation }) {
   return (
-    <Onboarding
-      SkipButtonComponent={skip}
-      NextButtonComponent={next}
-      DoneButtonComponent={done}
-      DotComponent={dots}
-      onSkip={() => navigation.replace("WelcomeScreen")}
-      onDone={() => navigation.navigate("WelcomeScreen")}
-      pages={[
-        {
-          backgroundColor: "#a6e4d0",
-          image: <Image source={require("../../assets/images/onboards/onboarding-img1.png")} />,
-          title: "Enter in your app",
-          subtitle: "Done with React Native Onboarding Swiper",
-        },
-        {
-          backgroundColor: "#fdeb93",
-          image: <Image source={require("../../assets/images/onboards/onboarding-img2.png")} />,
-          title: "Choose your favourite things",
-          subtitle: "Done with React Native Onboarding Swiper",
-        },
-        {
-          backgroundColor: "#e9bcbe",
-          image: <Image source={require("../../assets/images/onboards/onboarding-img3.png")} />,
-          title: "Pick up your thing on the door",
-          subtitle: "Done with React Native Onboarding Swiper",
-        },
-      ]}
-    />
+      <Onboarding
+        SkipButtonComponent={skip}
+        NextButtonComponent={next}
+        DoneButtonComponent={done}
+        DotComponent={dots}
+        onSkip={() => navigation.replace("WelcomeScreen")}
+        onDone={() => navigation.navigate("WelcomeScreen")}
+        pages={[
+          {
+            backgroundColor: "#a6e4d0",
+            image: (
+              <Image
+                source={require("../../assets/images/onboards/onboarding-img1.png")}
+              />
+            ),
+            title: "Enter in your app",
+            subtitle: "Done with React Native Onboarding Swiper",
+          },
+          {
+            backgroundColor: "#fdeb93",
+            image: (
+              <Image
+                source={require("../../assets/images/onboards/onboarding-img2.png")}
+              />
+            ),
+            title: "Choose your favourite things",
+            subtitle: "Done with React Native Onboarding Swiper",
+          },
+          {
+            backgroundColor: "#e9bcbe",
+            image: (
+              <Image
+                source={require("../../assets/images/onboards/onboarding-img3.png")}
+              />
+            ),
+            title: "Pick up your thing on the door",
+            subtitle: "Done with React Native Onboarding Swiper",
+          },
+        ]}
+      />
   );
 }
 

@@ -18,7 +18,29 @@ const DetailScreen = ({ navigation, route }) => {
   const [likeNo, setLikeNo] = useState(item.like);
   const [count, setCount] = useState(0);
   const [userLike, setUserLike] = useState(false);
+  const [storageQuantity, setStorageQuantity] = useState(item.storageQuantity);
   const { user, setUser } = useContext(AuthContext);
+
+  const addToCart = () => {
+    let newPostRef = database().ref("carts/" + user.uid + item.id);
+    newPostRef.set({
+      count: count,
+      imageUrl: item.imageUrl,
+      name: item.name,
+      type: item.type,
+      price: item.price,
+      like: item.like,
+      popular: item.popular,
+      storageQuantity: item.storageQuantity,
+      description: item.description,
+    });
+  };
+
+  const deleteFromCart = () => {
+    database()
+      .ref("carts/" + user.uid + item.id)
+      .set(null);
+  };
 
   const checkUserLike = () => {
     database()
@@ -76,11 +98,25 @@ const DetailScreen = ({ navigation, route }) => {
       .on("value", function (snapshot) {
         let snapshotData = snapshot.val();
         setLikeNo(snapshotData.like);
+        setStorageQuantity(snapshotData.storageQuantity);
       });
     checkUserLike();
+    database()
+      .ref("carts/" + user.uid)
+      .on("value", function (snapshot) {
+        if (snapshot.hasChild(item.id)) {
+          setCount(snapshot.child(item.id).val().count);
+        } else {
+          setCount(0);
+        }
+      });
+
     return () => {
       setLikeNo(0);
       setUserLike(false);
+      setCount(0);
+      setProductUserLike(false);
+      setStorageQuantity(0);
     };
   }, []);
 
@@ -103,7 +139,9 @@ const DetailScreen = ({ navigation, route }) => {
         <Text style={{ fontWeight: "bold", fontSize: 18 }}>Details</Text>
         <TouchableOpacity
           style={style.headerBtn}
-          onPress={() => navigation.navigate("Cart")}
+          onPress={() => {
+            navigation.navigate("Cart");
+          }}
         >
           <MaterialCommunityIcons
             name="cart-outline"
@@ -196,7 +234,14 @@ const DetailScreen = ({ navigation, route }) => {
             <View style={style.quantityContainer}>
               <TouchableOpacity
                 style={style.quantityBtn}
-                onPress={() => setCount(count <= 0 ? 0 : count - 1)}
+                onPress={() => {
+                  if (count > 1) {
+                    setCount(count - 1);
+                  } else {
+                    setCount(0);
+                    deleteFromCart();
+                  }
+                }}
               >
                 <MaterialCommunityIcons name="minus" size={20} />
               </TouchableOpacity>
@@ -205,7 +250,11 @@ const DetailScreen = ({ navigation, route }) => {
               </Text>
               <TouchableOpacity
                 style={style.quantityBtn}
-                onPress={() => setCount(count >= 99 ? 99 : count + 1)}
+                onPress={() => {
+                  if (count < storageQuantity && count < 99) {
+                    setCount(count + 1);
+                  }
+                }}
               >
                 <MaterialCommunityIcons name="plus" size={20} />
               </TouchableOpacity>
@@ -234,7 +283,17 @@ const DetailScreen = ({ navigation, route }) => {
                 color={userLike ? COLORS.red : COLORS.primary}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={style.addToCartBtn} activeOpacity={0.8}>
+            <TouchableOpacity
+              style={style.addToCartBtn}
+              activeOpacity={0.8}
+              onPress={() => {
+                if (count > 0) {
+                  addToCart();
+                } else {
+                  deleteFromCart();
+                }
+              }}
+            >
               <Text style={{ color: COLORS.white }}>Add To Cart</Text>
             </TouchableOpacity>
           </View>
