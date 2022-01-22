@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   SafeAreaView,
@@ -16,8 +16,8 @@ import {
 } from "react-native";
 import COLORS from "../const/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import furnitures from "../const/Furnitures";
 import database from "@react-native-firebase/database";
+import { AuthContext } from "../../first_navigation/AuthProvider";
 const { width } = Dimensions.get("screen");
 
 const ProductListScreen = ({ navigation }) => {
@@ -30,6 +30,7 @@ const ProductListScreen = ({ navigation }) => {
     { name: "Bed", iconName: "bed-queen-outline" },
     { name: "Other", iconName: "alpha-o-box-outline" },
   ];
+  const { user, setUser } = useContext(AuthContext);
   const [data, setData] = useState([]);
   const [popularData, setPopularData] = useState([]);
   const [topData, setTopData] = useState([]);
@@ -199,11 +200,11 @@ const ProductListScreen = ({ navigation }) => {
       <TouchableOpacity
         style={style.popularItemCard}
         activeOpacity={0.8}
-        onPress={() =>
+        onPress={() => {
           navigation.navigate("detail", {
             item: item,
-          })
-        }
+          });
+        }}
       >
         <Image
           source={{ uri: item.imageUrl }}
@@ -235,7 +236,7 @@ const ProductListScreen = ({ navigation }) => {
   return (
     <View
       style={{
-        backgroundColor: COLORS.white,
+        // backgroundColor: COLORS.white,
         flex: 1,
         paddingBottom: 50,
         paddingTop: 40,
@@ -249,7 +250,8 @@ const ProductListScreen = ({ navigation }) => {
           color={COLORS.primary}
         />
         <TouchableOpacity>
-          <MaterialCommunityIcons onPress={()=>navigation.navigate("Cart")}
+          <MaterialCommunityIcons
+            onPress={() => navigation.navigate("Cart")}
             name="cart-outline"
             size={28}
             color={COLORS.primary}
@@ -348,7 +350,8 @@ const style = StyleSheet.create({
   },
   searchInputContainer: {
     height: 50,
-    backgroundColor: COLORS.light,
+    // backgroundColor: COLORS.light,
+    backgroundColor: "#e0e0e0",
     flex: 1,
     flexDirection: "row",
     alignItems: "center",

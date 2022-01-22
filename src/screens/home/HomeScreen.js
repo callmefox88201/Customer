@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
@@ -12,9 +12,10 @@ import {
   TouchableOpacity,
   ImageBackground,
 } from "react-native";
+import SwiperFlatList from "react-native-swiper-flatlist";
 import { SimpleLineIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import database from "@react-native-firebase/database";
-import { AuthContext } from "../first_navigation/AuthProvider";
 const { width } = Dimensions.get("screen");
 
 const DATA_CATEGORIES = [
@@ -54,17 +55,17 @@ const DATA_OFFERS = [
   {
     id: "img2",
     image: require("../../assets/images/home/img_newoffers1.png"),
-    content: "content2",
+    content: "Big Sales",
   },
   {
     id: "img3",
     image: require("../../assets/images/home/img_newoffers2.png"),
-    content: "content3",
+    content: "New Year Comming",
   },
   {
     id: "img4",
     image: require("../../assets/images/home/img_newoffers3.png"),
-    content: "content4",
+    content: "2.2",
   },
 ];
 
@@ -92,7 +93,6 @@ const ItemRoom = ({ image, nameRoom }) => (
 
 export default function HomeScreen({ navigation }) {
   const [data, setData] = useState([]);
-  const { logout } = useContext(AuthContext);
   const get = () => {
     database()
       .ref("products/")
@@ -157,65 +157,36 @@ export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.view_header}>
-        <SimpleLineIcons
-          style={{ paddingVertical: 16, paddingLeft: 16 }}
-          name="equalizer"
-          size={24}
-          color="black"
-        />
+        <MaterialCommunityIcons name="sort-variant" size={28} color="#122636" />
 
         <View style={styles.viewsearch}>
-          <TextInput style={styles.textInput} />
-          <Image
-            style={styles.search}
-            source={require("../../assets/images/home/ic_search.png")}
-          />
+          <Text
+            style={{
+              fontSize: 30,
+              fontWeight: "bold",
+              color: "#122636",
+            }}
+          >
+            Home
+          </Text>
         </View>
-        <TouchableOpacity onPress={() => logout()}>
-          <Image source={require("../../assets/images/home/ic_profile.png")} />
-        </TouchableOpacity>
       </View>
 
       <ScrollView style={{ marginBottom: 55 }}>
-        <View style={styles.view_new_offers}>
-          <ScrollView
-            pagingEnabled
-            horizontal
-            onScroll={change}
-            style={{ width: Dimensions.get("window").width }}
-            showsHorizontalScrollIndicator={false}
-          >
-            {DATA_OFFERS.map((item, index) => (
-              <View key={index} style={styles.view_new_offers}>
-                <Image source={item["image"]} style={styles.view_new_offers} />
-                <Text style={styles.txt_new_offers}>{item["content"]}</Text>
-              </View>
-            ))}
-          </ScrollView>
-          <View
-            style={{
-              flexDirection: "row",
-              position: "absolute",
-              bottom: 0,
-              margin: 8,
-              alignSelf: "center",
-            }}
-          >
-            {DATA_OFFERS.map((item, k) => (
-              <Text
-                key={k}
-                style={k == active ? styles.txt_Active_dot : styles.txt_dot}
-              >
-                ⬤
-              </Text>
-            ))}
-          </View>
-        </View>
+        <SwiperFlatList autoplay autoplayDelay={5} autoplayLoop showPagination>
+          {DATA_OFFERS.map((item, index) => (
+            <View key={index} style={styles.view_new_offers}>
+              <Image source={item["image"]} style={styles.view_new_offers} />
+              <Text style={styles.txt_new_offers}>{item["content"]}</Text>
+            </View>
+          ))}
+        </SwiperFlatList>
 
         <Text style={styles.txt_title_content}>Popular</Text>
         <FlatList
           data={popularData}
           horizontal
+          style={{ paddingLeft: 20 }}
           keyExtractor={(item, index) => {
             return item.id;
           }}
@@ -308,7 +279,7 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#e0e0e0",
+    // backgroundColor: "#e0e0e0",
     paddingTop: 40,
   },
   view_header: {
@@ -317,6 +288,7 @@ const styles = StyleSheet.create({
     height: 70,
     justifyContent: "space-between",
     padding: 8,
+    alignItems: "center",
   },
   viewsearch: {
     width: "60%",
@@ -365,8 +337,8 @@ const styles = StyleSheet.create({
   txt_new_offers: {
     position: "absolute",
     fontSize: 32,
-    color: "#e0e0e0",
-    fontWeight: "600",
+    color: "#ff4",
+    fontWeight: "bold",
   },
   view_new_offers: {
     justifyContent: "center",

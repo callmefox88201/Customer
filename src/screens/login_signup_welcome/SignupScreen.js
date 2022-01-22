@@ -195,6 +195,18 @@ export default function SignupScreen({ navigation }) {
           <Text style={styles.loginText}>Sign Up</Text>
         </LinearGradient>
       </TouchableOpacity>
+      <View style={{ flexDirection: "row", top: screenHeight * 0.1 }}>
+        <Text style={{ fontSize: 18 }}>You had an account?</Text>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("LoginScreen");
+          }}
+        >
+          <Text style={{ fontSize: 18, marginLeft: 10, color: "red" }}>
+            Login here
+          </Text>
+        </TouchableOpacity>
+      </View>
       <StatusBar style="auto" />
     </View>
   );

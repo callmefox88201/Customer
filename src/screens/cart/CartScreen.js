@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect, useLayoutEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   View,
@@ -18,89 +18,107 @@ const { width } = Dimensions.get("screen");
 export default function CartScreen({ navigation, route }) {
   const { user, setUser } = useContext(AuthContext);
   const [carts, setCarts] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [cartProducts, setCartProducts] = useState([]);
+  // const [cartIds, setCartIds] = useState([])
+  const [count, setCount] = useState(0);
+  // let carts = [];
 
-  const getCartProducts = () => {
+  const getCartProductIds = () => {
     database()
-      .ref("carts/")
+      .ref("carts/" + user.uid + "/")
       .on("value", function (snapshot) {
         let array = [];
         snapshot.forEach(function (childSnapshot) {
-          var childData = childSnapshot.val();
-          var k = childSnapshot.key;
-          if (k.indexOf(user.uid) >= 0) {
-            array.push({
-              id: k.substring(user.uid.length),
-              count: childData.count,
-              imageUrl: childData.imageUrl,
-              name: childData.name,
-              type: childData.type,
-              price: childData.price,
-              like: childData.like,
-              popular: childData.popular,
-              storageQuantity: childData.storageQuantity,
-              description: childData.description,
-            });
-          }
+          let childData = childSnapshot.val();
+          let k = childSnapshot.key;
+          array.push({
+            id: k,
+            count: childData.count,
+          });
         });
         setCarts(array);
       });
   };
-  const subtract = (item) => {
-    let count = item.count - 1;
-    if (count > 0) {
-      let postRef = database().ref("carts/" + user.uid + item.id);
-      postRef.set({
-        count: count,
-        imageUrl: item.imageUrl,
-        name: item.name,
-        type: item.type,
-        price: item.price,
-        like: item.like,
-        popular: item.popular,
-        storageQuantity: item.storageQuantity,
-        description: item.description,
+
+  const getProducts = () => {
+    database()
+      .ref("products/")
+      .on("value", function (snapshot) {
+        let array = [];
+        snapshot.forEach(function (childSnapshot) {
+          var childData = childSnapshot.val();
+          array.push({
+            id: childSnapshot.key,
+            imageUrl: childData.imageUrl,
+            name: childData.name,
+            type: childData.type,
+            price: childData.price,
+            like: childData.like,
+            popular: childData.popular,
+            storageQuantity: childData.storageQuantity,
+            description: childData.description,
+          });
+        });
+        setProducts(array);
       });
+  };
+
+  const subtract = (id) => {
+    let count = getCount(id);
+    if (count > 1) {
+      let postRef = database().ref("carts/" + user.uid + "/" + id);
+      postRef.set({
+        count: count - 1,
+      });
+      // item.count -= 1;
     } else {
       database()
-        .ref("carts/" + user.uid + item.id)
+        .ref("carts/" + user.uid + "/" + id)
         .set(null);
     }
   };
 
   const add = (item) => {
-    console.log(item.storageQuantity);
-    console.log(item.count);
-    if (item.count < item.storageQuantity) {
-      let postRef = database().ref("carts/" + user.uid + item.id);
+    let count = getCount(item.id);
+    if (count < item.storageQuantity) {
+      let postRef = database().ref("carts/" + user.uid + "/" + item.id);
       postRef.set({
-        count: item.count + 1,
-        imageUrl: item.imageUrl,
-        name: item.name,
-        type: item.type,
-        price: item.price,
-        like: item.like,
-        popular: item.popular,
-        storageQuantity: item.storageQuantity,
-        description: item.description,
+        count: count + 1,
       });
-    } else {
-      console.log("?");
     }
   };
 
-  React.useEffect(() => {
-    getCartProducts();
+  useEffect(() => {
+    getCartProductIds();
+    getProducts();
     return () => {
       setCarts([]);
-      // setLoad(false);
-      // getDataInfo();
-      // getCartProducts();
+      setProducts([]);
     };
   }, []);
 
-  const CartButton = ({ title, onPress = () => {} }) => {
+  const getCount = (id) => {
+    for (let i = 0; i < carts.length; i++) {
+      if (carts[i].id === id) {
+        return carts[i].count;
+      }
+    }
+    return -1;
+  };
+
+  const getTotalAmount = () => {
+    let total = 0;
+    for (let i = 0; i < products.length; i++) {
+      let c = getCount(products[i].id);
+      if (c > -1) total += products[i].price * c;
+    }
+    return total;
+  };
+
+  const CartButton = ({ title }) => {
     return (
-      <TouchableOpacity activeOpacity={0.8} onPress={onPress}>
+      <TouchableOpacity activeOpacity={0.8} onPress={() => {}}>
         <View style={styles.cardButton}>
           <Text style={styles.title}>{title}</Text>
         </View>
@@ -108,8 +126,20 @@ export default function CartScreen({ navigation, route }) {
     );
   };
   const CartCard = ({ item }) => {
+    let count = getCount(item.id);
+    if (count < 0) {
+      return null;
+    }
     return (
-      <View style={styles.cartCard}>
+      <TouchableOpacity
+        style={styles.cartCard}
+        onPress={() => {
+          navigation.navigate("Shop", {
+            screen: "detail",
+            params: { item: item },
+          });
+        }}
+      >
         <Image
           source={{ uri: item.imageUrl }}
           style={{ height: 80, width: 80 }}
@@ -123,102 +153,32 @@ export default function CartScreen({ navigation, route }) {
             ${item.price}
           </Text>
         </View>
-        <View style={{ marginRight: 20, alignItems: "center" }}>
-          <Text style={{ fontWeight: "bold", fontSize: 18 }}>{item.count}</Text>
-          <View style={styles.actionBtn}>
-            <TouchableOpacity
-              style={{
-                width: "50%",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              onPress={() => {
-                subtract(item);
-              }}
-            >
-              <MaterialIcons name="remove" size={25} color="white" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                width: "50%",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              onPress={() => {
-                add(item);
-              }}
-            >
-              <MaterialIcons name="add" size={25} color="white" />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    );
-  };
-  const PopularItemCard = ({ item }) => {
-    return (
-      <TouchableOpacity
-        style={styles.popularItemCard}
-        activeOpacity={0.8}
-        // onPress={() =>
-        //   navigation.navigate("detail", {
-        //     item: item,
-        //   })
-        // }
-      >
-        <Image
-          source={{ uri: item.imageUrl }}
-          style={{
-            width: 100,
-            height: "100%",
-            borderTopLeftRadius: 10,
-            borderBottomLeftRadius: 10,
-            marginRight: 10,
-          }}
-        />
-        <View style={{ paddingVertical: 15, justifyContent: "center" }}>
-          <Text
-            style={{
-              marginTop: 10,
-              fontSize: 12,
-              color: COLORS.primary,
-              fontWeight: "bold",
+
+        <View style={styles.quantityContainer}>
+          <TouchableOpacity
+            style={styles.quantityBtn}
+            onPress={() => {
+              subtract(item.id);
             }}
           >
-            {item.name}
+            <MaterialCommunityIcons name="minus" size={20} />
+          </TouchableOpacity>
+          <Text style={{ color: "white", fontWeight: "bold" }}>
+            {getCount(item.id)}
           </Text>
-          <View style={{ flexDirection: "row", marginTop: 10 }}>
-            <Text
-              style={{
-                fontWeight: "bold",
-                color: COLORS.primary,
-                fontSize: 12,
-              }}
-            >
-              {"$" + item.price}
-            </Text>
-            <View style={{ flexDirection: "row", marginLeft: 60 }}>
-              <MaterialCommunityIcons
-                name="heart"
-                color={COLORS.red}
-                size={18}
-              />
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  color: COLORS.primary,
-                  fontSize: 12,
-                  marginLeft: 3,
-                }}
-              >
-                {item.like}
-              </Text>
-            </View>
-          </View>
+          <TouchableOpacity
+            style={styles.quantityBtn}
+            onPress={() => {
+              add(item);
+            }}
+          >
+            <MaterialCommunityIcons name="plus" size={20} />
+          </TouchableOpacity>
         </View>
       </TouchableOpacity>
     );
   };
+
   return (
     <View style={{ backgroundColor: "white", flex: 1 }}>
       <View style={styles.header}>
@@ -238,7 +198,7 @@ export default function CartScreen({ navigation, route }) {
       <FlatList
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingLeft: 20, paddingBottom: 10 }}
-        data={carts}
+        data={products}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <CartCard item={item} />}
         ListFooterComponentStyle={{ paddingHorizontal: 20, marginTop: 20 }}
@@ -254,7 +214,9 @@ export default function CartScreen({ navigation, route }) {
               <Text style={{ fontSize: 18, fontWeight: "bold" }}>
                 Total Price
               </Text>
-              <Text style={{ fontSize: 18, fontWeight: "bold" }}>$0</Text>
+              <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+                {"$" + getTotalAmount()}
+              </Text>
             </View>
             <View style={{ marginHorizontal: 30 }}>
               <CartButton title="CHECKOUT" />
@@ -297,7 +259,7 @@ const styles = StyleSheet.create({
     alignContent: "center",
   },
   cardButton: {
-    backgroundColor: "#F9813A",
+    backgroundColor: "#122636",
     height: 60,
     borderRadius: 30,
     justifyContent: "center",
@@ -317,5 +279,24 @@ const styles = StyleSheet.create({
     marginRight: 20,
     borderRadius: 10,
     flexDirection: "row",
+  },
+  quantityContainer: {
+    height: 35,
+    width: 100,
+    backgroundColor: "#122636",
+    borderRadius: 7,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
+  quantityBtn: {
+    height: 25,
+    width: 25,
+    backgroundColor: "white",
+    borderRadius: 7,
+    marginHorizontal: 5,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

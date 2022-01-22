@@ -136,6 +136,9 @@ export default function LoginScreen({ navigation }) {
       </View>
       <TouchableOpacity
         style={{ marginTop: 20, alignSelf: "flex-end", marginRight: 30 }}
+        onPress={() => {
+          navigation.navigate("ForgotPasswordScreen");
+        }}
       >
         <Text style={{ fontSize: 18, color: "gray" }}>Forgot Password?</Text>
       </TouchableOpacity>
@@ -156,6 +159,18 @@ export default function LoginScreen({ navigation }) {
           <Text style={styles.loginText}>Login</Text>
         </LinearGradient>
       </TouchableOpacity>
+      <View style={{ flexDirection: "row", top: screenHeight * 0.1 }}>
+        <Text style={{ fontSize: 18 }}>Don't have an account?</Text>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("SignupScreen");
+          }}
+        >
+          <Text style={{ fontSize: 18, marginLeft: 10, color: "red" }}>
+            Register here
+          </Text>
+        </TouchableOpacity>
+      </View>
       <StatusBar style="auto" />
     </View>
   );

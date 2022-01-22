@@ -22,23 +22,15 @@ const DetailScreen = ({ navigation, route }) => {
   const { user, setUser } = useContext(AuthContext);
 
   const addToCart = () => {
-    let newPostRef = database().ref("carts/" + user.uid + item.id);
+    let newPostRef = database().ref("carts/" + user.uid + "/" + item.id);
     newPostRef.set({
       count: count,
-      imageUrl: item.imageUrl,
-      name: item.name,
-      type: item.type,
-      price: item.price,
-      like: item.like,
-      popular: item.popular,
-      storageQuantity: item.storageQuantity,
-      description: item.description,
     });
   };
 
   const deleteFromCart = () => {
     database()
-      .ref("carts/" + user.uid + item.id)
+      .ref("carts/" + user.uid + "/" + item.id)
       .set(null);
   };
 
@@ -54,9 +46,9 @@ const DetailScreen = ({ navigation, route }) => {
       });
   };
 
-  const setProductUserLike = async () => {
+  const setProductUserLike = () => {
     if (userLike) {
-      await database().ref("likes/").child(item.id).child(user.uid).set(null);
+      database().ref("likes/").child(item.id).child(user.uid).set(null);
       database()
         .ref("products/")
         .child(item.id)
@@ -66,7 +58,7 @@ const DetailScreen = ({ navigation, route }) => {
           name: item.name,
           type: item.type,
           price: item.price,
-          like: likeNo - 1,
+          like: item.like - 1,
           popular: item.popular,
           storageQuantity: item.storageQuantity,
           description: item.description,
@@ -84,7 +76,7 @@ const DetailScreen = ({ navigation, route }) => {
           name: item.name,
           type: item.type,
           price: item.price,
-          like: likeNo + 1,
+          like: item.like + 1,
           popular: item.popular,
           storageQuantity: item.storageQuantity,
           description: item.description,
@@ -115,7 +107,6 @@ const DetailScreen = ({ navigation, route }) => {
       setLikeNo(0);
       setUserLike(false);
       setCount(0);
-      setProductUserLike(false);
       setStorageQuantity(0);
     };
   }, []);
@@ -124,7 +115,7 @@ const DetailScreen = ({ navigation, route }) => {
     <View
       style={{
         flex: 1,
-        backgroundColor: COLORS.white,
+        // backgroundColor: COLORS.white,
         paddingBottom: 50,
         paddingTop: 40,
       }}
@@ -136,7 +127,7 @@ const DetailScreen = ({ navigation, route }) => {
         >
           <MaterialCommunityIcons name="chevron-left" size={25} />
         </TouchableOpacity>
-        <Text style={{ fontWeight: "bold", fontSize: 18 }}>Details</Text>
+        <Text style={{ fontWeight: "bold", fontSize: 22 }}>Details</Text>
         <TouchableOpacity
           style={style.headerBtn}
           onPress={() => {
@@ -179,11 +170,11 @@ const DetailScreen = ({ navigation, route }) => {
               <MaterialCommunityIcons
                 name="heart"
                 color={COLORS.red}
-                size={18}
+                size={22}
               />
               <Text
                 style={{
-                  fontSize: 10,
+                  fontSize: 15,
                   color: COLORS.white,
                   fontWeight: "bold",
                   marginLeft: 4,
@@ -192,11 +183,11 @@ const DetailScreen = ({ navigation, route }) => {
                 {likeNo}
               </Text>
             </View>
-            <Text
+            {/* <Text
               style={{ fontSize: 9, color: COLORS.white, fontWeight: "bold" }}
             >
               250 Reviews
-            </Text>
+            </Text> */}
           </View>
         </ImageBackground>
 
@@ -216,7 +207,7 @@ const DetailScreen = ({ navigation, route }) => {
           >
             Description
           </Text>
-          <Text style={{ color: COLORS.dark, fontSize: 12, lineHeight: 20 }}>
+          <Text style={{ color: COLORS.dark, fontSize: 14, lineHeight: 20 }}>
             {item.description}
           </Text>
           <View
@@ -321,7 +312,7 @@ const style = StyleSheet.create({
   headerBtn: {
     height: 50,
     width: 50,
-    backgroundColor: COLORS.light,
+    // backgroundColor: COLORS.light,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",

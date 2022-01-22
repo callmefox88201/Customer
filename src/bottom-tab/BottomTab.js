@@ -4,11 +4,12 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import Icon, { Icons } from "./Icons";
 import Colors from "./Colors";
-import ColorScreen from "./ColorScreen";
 import * as Animatable from "react-native-animatable";
 import HomeScreen from "../screens/home/HomeScreen";
 import StackScreen from "../screens/product-list/screen/StackScreen";
 import CartScreen from "../screens/cart/CartScreen";
+import ProfileStack from "../screens/profile/ProfileStack";
+import UnderConstructScreen from "../screens/chatting/UnderConstructScreen";
 // import { StatusBar } from "react-native";
 
 const TabArr = [
@@ -24,7 +25,7 @@ const TabArr = [
     label: "Inbox",
     type: Icons.AntDesign,
     icon: "message1",
-    component: ColorScreen,
+    component: UnderConstructScreen,
   },
   {
     route: "Shop",
@@ -45,7 +46,7 @@ const TabArr = [
     label: "Account",
     type: Icons.FontAwesome,
     icon: "user-circle-o",
-    component: ColorScreen,
+    component: ProfileStack,
   },
 ];
 
