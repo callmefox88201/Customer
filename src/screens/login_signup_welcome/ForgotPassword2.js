@@ -1,22 +1,11 @@
-import React, { useState, useContext } from "react";
+import React from "react";
 import { StatusBar } from "expo-status-bar";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  TextInput,
-  ScrollView,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { AuthContext } from "../first_navigation/AuthProvider";
 
-export default function ForgotPasswordScreen({ navigation }) {
-  const [email, setEmail] = useState("");
-  const { forgotPassword } = useContext(AuthContext);
+export default function ForgotPassword2({ navigation }) {
   return (
-    <ScrollView style={{ paddingTop: 40 }}>
+    <View style={{ paddingTop: 40 }}>
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.headerBtn}
@@ -29,7 +18,7 @@ export default function ForgotPasswordScreen({ navigation }) {
         </Text>
       </View>
       <Image
-        source={require("../../assets/images/EmailInput.png")}
+        source={require("../../assets/images/EmailSend.png")}
         style={{
           marginTop: 50,
           width: "100%",
@@ -38,52 +27,33 @@ export default function ForgotPasswordScreen({ navigation }) {
       />
       <Text
         style={{
-          fontSize: 18,
-          marginLeft: 20,
+          fontWeight: "bold",
+          fontSize: 35,
+          alignSelf: "center",
           marginTop: 20,
-          color: "grey",
         }}
       >
-        Enter the email associated with your account and we'll send an email
-        with instructions to reset your password.
+        Check your mail
       </Text>
       <Text
         style={{
           fontSize: 18,
-          marginLeft: 20,
+          marginHorizontal: 20,
           marginTop: 20,
           color: "grey",
+          textAlign: "center",
         }}
       >
-        Email address
+        We have sent a password recover instructions to your email.
       </Text>
-      <TextInput
-        style={{
-          borderWidth: 1,
-          marginHorizontal: 20,
-          borderRadius: 5,
-          height: 40,
-          borderColor: "grey",
-          fontSize: 18,
-        }}
-        onChangeText={(email) => setEmail(email)}
-      />
       <TouchableOpacity
         style={styles.commandButton}
-        onPress={async () => {
-          let e = await forgotPassword(email);
-          if (e == true) {
-            navigation.navigate("ForgotPassword2");
-          } else {
-            console.log(e);
-            alert("Failed");
-          }
-        }}
+        onPress={() => navigation.navigate("LoginScreen")}
       >
-        <Text style={styles.panelButtonTitle}>Send Instructions</Text>
+        <Text style={styles.panelButtonTitle}>Login</Text>
       </TouchableOpacity>
       <StatusBar style="auto" />
-    </ScrollView>
+    </View>
   );
 }
 

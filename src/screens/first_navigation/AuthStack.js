@@ -10,6 +10,7 @@ import SignupScreen from "../login_signup_welcome/SignupScreen";
 import LoginScreen from "../login_signup_welcome/LoginScreen";
 import WelcomeScreen from "../login_signup_welcome/WelcomeScreen";
 import ForgotPasswordScreen from "../login_signup_welcome/ForgotPasswordScreen";
+import ForgotPassword2 from "../login_signup_welcome/ForgotPassword2";
 
 const Stack = createNativeStackNavigator();
 
@@ -61,6 +62,11 @@ export default function AuthStack() {
       <Stack.Screen
         name="ForgotPasswordScreen"
         component={ForgotPasswordScreen}
+        options={{ header: () => null }}
+      />
+      <Stack.Screen
+        name="ForgotPassword2"
+        component={ForgotPassword2}
         options={{ header: () => null }}
       />
     </Stack.Navigator>

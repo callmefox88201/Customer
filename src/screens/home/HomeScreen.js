@@ -8,12 +8,10 @@ import {
   FlatList,
   ScrollView,
   Dimensions,
-  TextInput,
   TouchableOpacity,
   ImageBackground,
 } from "react-native";
 import SwiperFlatList from "react-native-swiper-flatlist";
-import { SimpleLineIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import database from "@react-native-firebase/database";
 const { width } = Dimensions.get("screen");
@@ -146,14 +144,6 @@ export default function HomeScreen({ navigation }) {
 
   const [active, setactive] = useState(0);
 
-  const change = ({ nativeEvent }) => {
-    const slide = Math.ceil(
-      nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width
-    );
-    if (active !== slide) {
-      setactive(slide);
-    }
-  };
   return (
     <View style={styles.container}>
       <View style={styles.view_header}>
