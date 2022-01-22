@@ -7,9 +7,9 @@ import Colors from "./Colors";
 import * as Animatable from "react-native-animatable";
 import HomeScreen from "../screens/home/HomeScreen";
 import StackScreen from "../screens/product-list/screen/StackScreen";
-import CartScreen from "../screens/cart/CartScreen";
 import ProfileStack from "../screens/profile/ProfileStack";
 import UnderConstructScreen from "../screens/chatting/UnderConstructScreen";
+import CartStack from "../screens/cart/CartStack";
 // import { StatusBar } from "react-native";
 
 const TabArr = [
@@ -39,7 +39,7 @@ const TabArr = [
     label: "Cart",
     type: Icons.AntDesign,
     icon: "shoppingcart",
-    component: CartScreen,
+    component: CartStack,
   },
   {
     route: "Account",

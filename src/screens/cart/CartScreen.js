@@ -20,9 +20,7 @@ export default function CartScreen({ navigation, route }) {
   const [carts, setCarts] = useState([]);
   const [products, setProducts] = useState([]);
   const [cartProducts, setCartProducts] = useState([]);
-  // const [cartIds, setCartIds] = useState([])
   const [count, setCount] = useState(0);
-  // let carts = [];
 
   const getCartProductIds = () => {
     database()
@@ -118,7 +116,12 @@ export default function CartScreen({ navigation, route }) {
 
   const CartButton = ({ title }) => {
     return (
-      <TouchableOpacity activeOpacity={0.8} onPress={() => {}}>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() => {
+          navigation.navigate("PaymentScreen", { amount: getTotalAmount() });
+        }}
+      >
         <View style={styles.cardButton}>
           <Text style={styles.title}>{title}</Text>
         </View>

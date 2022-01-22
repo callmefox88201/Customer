@@ -163,7 +163,7 @@ export default function HomeScreen({ navigation }) {
       </View>
 
       <ScrollView style={{ marginBottom: 55 }}>
-        <SwiperFlatList autoplay autoplayDelay={5} autoplayLoop showPagination>
+        <SwiperFlatList autoplay autoplayDelay={5} autoplayLoop>
           {DATA_OFFERS.map((item, index) => (
             <View key={index} style={styles.view_new_offers}>
               <Image source={item["image"]} style={styles.view_new_offers} />
